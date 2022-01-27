@@ -1,0 +1,41 @@
+export interface ITypesColor {
+  bug: string,
+  dark: string,
+  dragon: string,
+  electric: string,
+  fairy: string,
+  fighting: string,
+  fire: string,
+  flying: string,
+  ghost: string,
+  grass: string,
+  ground: string,
+  ice: string,
+  normal: string,
+  poison: string,
+  psychic: string,
+  rock: string,
+  steel: string,
+  water: string
+}
+
+export const typesColor = {
+  bug: '#54d370',
+  dark: '#9b9bce',
+  dragon: '#62cad9',
+  electric: '#ffc800',
+  fairy: '#e36798',
+  fighting: '#e28063',
+  fire: '#ea3e4d',
+  flying: '#94b2c7',
+  ghost: '#c78cc8',
+  grass: '#6de08a',
+  ground: '#be8e55',
+  ice: '#a3daf4',
+  normal: '#e1b1bf',
+  poison: '#9b69da',
+  psychic: '#ff6bba',
+  rock: '#ad684f',
+  steel: '#60d4ad',
+  water: '#779df7'
+};
