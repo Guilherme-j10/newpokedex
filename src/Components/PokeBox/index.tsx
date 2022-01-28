@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { View, Text, Image } from 'react-native';
 import { IPokemonData } from '../../Screens/List';
 import { StylePokeBox } from './style';
@@ -9,7 +9,7 @@ interface IPokeBox {
   props: IPokemonData
 }
 
-export const PokeBox: React.FC <IPokeBox> = ({ props }) => {
+const PokeBox: React.FC <IPokeBox> = ({ props }) => {
   
   const [ LoadImage, setLoadImage ] = useState(false);
 
@@ -38,3 +38,5 @@ export const PokeBox: React.FC <IPokeBox> = ({ props }) => {
     </View>
   );
 }
+
+export default memo(PokeBox);

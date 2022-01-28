@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { StyleList } from './style';
 import { FontAwesome } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { PokeBox } from '../../Components/PokeBox';
+import PokeBox from '../../Components/PokeBox';
 import axios from 'axios';
+import { FooterLoadList } from '../../Components/FooterLoadList';
 
 export interface IPokemonData {
   id: number,
@@ -36,16 +37,31 @@ interface IRequestPokemonsOffset {
 export const List: React.FC = () => {
 
   const [ PokemonsInformations, setPokemonsInformations ] = useState([] as IPokemonData[]);
-  const [ isLoading, setisLoading ] = useState(false);
+  const [ isFirstLoadLoading, setisFirstLoadLoading ] = useState(true);
+  const [ NormalLoad, setNormalLoad ] = useState(false);
+  const [ isOverList, setisOverList ] = useState(false);
+
+  const InitialReference = useRef(0);
 
   const SomePokemons = async (): Promise<void> => {
 
     const Pokemons: IPokemonData[] = [];
-    setisLoading(true);
+    setisFirstLoadLoading(isFirstLoadLoading);
+
+    setNormalLoad(true);
 
     try {
-      
-      const GettingRequest = await axios.get<IRequestPokemonsOffset>('https://pokeapi.co/api/v2/pokemon?offset=0&limit=100');
+
+      const GettingRequest = await axios.get<IRequestPokemonsOffset>(`https://pokeapi.co/api/v2/pokemon?offset=${InitialReference.current}&limit=20`);
+
+      console.log(`https://pokeapi.co/api/v2/pokemon?offset=${InitialReference.current}&limit=20`);
+
+      if(!GettingRequest.data.results.length) {
+
+        setisOverList(true);
+        return;
+
+      };
 
       for(let i in GettingRequest.data.results){
 
@@ -78,8 +94,12 @@ export const List: React.FC = () => {
 
     } finally {
 
-      setPokemonsInformations(Pokemons);
-      setisLoading(false);
+      setPokemonsInformations(PokemonsInformations.concat(Pokemons));
+      setisFirstLoadLoading(false);
+
+      setNormalLoad(false);
+
+      InitialReference.current += 20;
 
     }
 
@@ -104,28 +124,37 @@ export const List: React.FC = () => {
       <View style={StyleList.TextStyleContainer}>
         <Text style={StyleList.TextStyle}>Pokedex</Text>
       </View>
-      {isLoading ? (
+      {isFirstLoadLoading ? (
         <View style={StyleList.ContainerLoadContent}>
           <ActivityIndicator color={'#888'} size={60} />
           <Text style={StyleList.TextLoad}>Buscando pokemons...</Text>
         </View>
       ) : (
-        <FlatList 
-          data={PokemonsInformations}
-          style={{ width: '100%' }}
-          overScrollMode="never" 
-          showsVerticalScrollIndicator={false}
-          columnWrapperStyle={{
-            width: '100%',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: 10
-          }}
-          renderItem={({ item }) => <PokeBox props={item} />}
-          keyExtractor={item => `${item.id}`}
-          numColumns={2}
-        />
+        <>
+          <FlatList 
+            data={PokemonsInformations}
+            style={{ width: '100%' }}
+            overScrollMode="never" 
+            showsVerticalScrollIndicator={false}
+            onEndReachedThreshold={0.8}
+            windowSize={21}
+            onEndReached={() => SomePokemons()}
+            columnWrapperStyle={{
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginTop: 10
+            }}
+            renderItem={({ item }) => <PokeBox props={item} />}
+            keyExtractor={item => `${item.id}`}
+            numColumns={2}
+            ListFooterComponent={<FooterLoadList />}
+            ListFooterComponentStyle={{
+              display: isOverList ? 'none' : 'flex'
+            }}
+          />
+        </>
       )}
     </View>
   );
