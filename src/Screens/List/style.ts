@@ -24,7 +24,6 @@ export const StyleList = StyleSheet.create({
   TextStyle: {
     fontFamily: 'Poppins_700Bold',
     fontSize: 30,
-    marginTop: normalize(20),
     color: '#444'
   },
   ContainerLoadContent: {

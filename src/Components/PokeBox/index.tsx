@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { memo } from 'react';
 import { View, Text, Image } from 'react-native';
 import { IPokemonData } from '../../Screens/List';
 import { StylePokeBox } from './style';
@@ -10,8 +10,6 @@ interface IPokeBox {
 }
 
 const PokeBox: React.FC <IPokeBox> = ({ props }) => {
-  
-  const [ LoadImage, setLoadImage ] = useState(false);
 
   return(
     <View style={[StylePokeBox.ContainerBox, { backgroundColor: `${typesColor[props.types[0].type.name as keyof ITypesColor]}b0` }]}>
@@ -26,13 +24,14 @@ const PokeBox: React.FC <IPokeBox> = ({ props }) => {
           <Text key={index} style={StylePokeBox.TextType}>{dados.type.name}</Text>
         ))}
       </View>
-      <Image style={StylePokeBox.PokeBall} source={PokeBall} />
+      <Image 
+        style={StylePokeBox.PokeBall}
+        source={PokeBall}
+      />
       <Image 
         style={StylePokeBox.ImagePokemon}
-        onLoadStart={() => setLoadImage(true)}
-        onLoadEnd={() => setLoadImage(false)}
         source={{ 
-          uri: props.sprites.other.home.front_default ? props.sprites.other.home.front_default : props.sprites.other['official-artwork'].front_default 
+          uri: props.sprites.other.home.front_default ? props.sprites.other.home.front_default : props.sprites.other['official-artwork'].front_default
         }} 
       />
     </View>

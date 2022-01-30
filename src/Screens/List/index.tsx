@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import PokeBox from '../../Components/PokeBox';
 import axios from 'axios';
 import { FooterLoadList } from '../../Components/FooterLoadList';
+import normalize from 'react-native-normalize';
 
 export interface IPokemonData {
   id: number,
@@ -41,12 +42,16 @@ export const List: React.FC = () => {
   const [ NormalLoad, setNormalLoad ] = useState(false);
   const [ isOverList, setisOverList ] = useState(false);
 
+  const debugMode = false;
+
   const InitialReference = useRef(0);
 
   const SomePokemons = async (): Promise<void> => {
 
-    const Pokemons: IPokemonData[] = [];
+    let Pokemons: IPokemonData[] = [];
     setisFirstLoadLoading(isFirstLoadLoading);
+
+    if(NormalLoad) return;
 
     setNormalLoad(true);
 
@@ -54,7 +59,7 @@ export const List: React.FC = () => {
 
       const GettingRequest = await axios.get<IRequestPokemonsOffset>(`https://pokeapi.co/api/v2/pokemon?offset=${InitialReference.current}&limit=20`);
 
-      console.log(`https://pokeapi.co/api/v2/pokemon?offset=${InitialReference.current}&limit=20`);
+      if(debugMode) console.log(`https://pokeapi.co/api/v2/pokemon?offset=${InitialReference.current}&limit=20`);
 
       if(!GettingRequest.data.results.length) {
 
@@ -66,6 +71,8 @@ export const List: React.FC = () => {
       for(let i in GettingRequest.data.results){
 
         const PokemonRequest = await axios.get<IPokemonData>(GettingRequest.data.results[i].url);
+
+        if(debugMode) console.log(GettingRequest.data.results[i].name);
 
         const PresetData: IPokemonData = {
           id: PokemonRequest.data.id,
@@ -95,6 +102,8 @@ export const List: React.FC = () => {
     } finally {
 
       setPokemonsInformations(PokemonsInformations.concat(Pokemons));
+      Pokemons = [];
+
       setisFirstLoadLoading(false);
 
       setNormalLoad(false);
@@ -114,15 +123,10 @@ export const List: React.FC = () => {
   return( 
     <View style={StyleList.ContainerMain}>
       <View style={StyleList.HeaderContainer}>
-        <TouchableOpacity>
-          <Ionicons name="arrow-back-sharp" size={27} color="#444" />
-        </TouchableOpacity>
+        <Text style={StyleList.TextStyle}>Pokedex</Text>
         <TouchableOpacity>
           <FontAwesome name="bars" size={24} color="#444" />
         </TouchableOpacity>
-      </View>
-      <View style={StyleList.TextStyleContainer}>
-        <Text style={StyleList.TextStyle}>Pokedex</Text>
       </View>
       {isFirstLoadLoading ? (
         <View style={StyleList.ContainerLoadContent}>
@@ -136,9 +140,14 @@ export const List: React.FC = () => {
             style={{ width: '100%' }}
             overScrollMode="never" 
             showsVerticalScrollIndicator={false}
-            onEndReachedThreshold={0.8}
-            windowSize={21}
+            onEndReachedThreshold={1}
+            decelerationRate={0.96}
             onEndReached={() => SomePokemons()}
+            viewabilityConfig={{
+              minimumViewTime: 1000,
+              viewAreaCoveragePercentThreshold: 100,
+              waitForInteraction: true
+            }}
             columnWrapperStyle={{
               width: '100%',
               flexDirection: 'row',
