@@ -50,7 +50,7 @@ export const Detail: React.FC <IDetail> = ({ navigation, route }) => {
   useEffect(() => {
     
     setBackGroundScreen(
-      typesColor[data.types[0].type.name as keyof ITypesColor]
+      `${typesColor[data.types[0].type.name as keyof ITypesColor]}b0`
     );
 
     (async () => {
@@ -83,7 +83,7 @@ export const Detail: React.FC <IDetail> = ({ navigation, route }) => {
     
     setData(PokemonData[Math.floor(ScrollPosition / 216)]); 
     setBackGroundScreen(
-      typesColor[PokemonData[Math.floor(ScrollPosition / 216)].types[0].type.name as keyof ITypesColor]
+      `${typesColor[PokemonData[Math.floor(ScrollPosition / 216)].types[0].type.name as keyof ITypesColor]}b0`
     );
 
   }
